@@ -18,5 +18,15 @@ namespace Acrelec.SCO.DataStructures
         {
             OrderItems = new List<OrderedItem>();
         }
+
+        public void AddOrderItems(POSItem pOSItem, int qty)
+        {
+            var orderedItem = new OrderedItem
+            {
+                ItemCode = pOSItem.ItemCode,
+                Qty = qty
+            };
+            OrderItems.Add(orderedItem);
+        }
     }
 }

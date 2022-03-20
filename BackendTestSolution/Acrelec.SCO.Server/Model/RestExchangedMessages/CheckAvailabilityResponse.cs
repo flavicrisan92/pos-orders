@@ -1,4 +1,4 @@
-﻿namespace Acrelec.SCO.Core.Model.RestExchangedMessages
+﻿namespace Acrelec.SCO.Server.Model.RestExchangedMessages
 {
     public class CheckAvailabilityResponse
     {
