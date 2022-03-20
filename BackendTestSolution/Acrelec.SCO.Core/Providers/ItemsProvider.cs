@@ -55,14 +55,21 @@ namespace Acrelec.SCO.Core.Providers
         //todo - implement missing methods of interface
         public async Task<bool> CheckServerAvailabilityAsync()
         {
-            var httpResponseMessage = await _httpClient.GetAsync("/api-sco/v1/Availability");
-            if (httpResponseMessage.IsSuccessStatusCode)
+            try
             {
-                string responseBody = await httpResponseMessage.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<CheckAvailabilityResponse>(responseBody);
-                return result.CanInjectOrders;
+                var httpResponseMessage = await _httpClient.GetAsync("/api-sco/v1/Availability");
+                if (httpResponseMessage.IsSuccessStatusCode)
+                {
+                    string responseBody = await httpResponseMessage.Content.ReadAsStringAsync();
+                    var result = JsonConvert.DeserializeObject<CheckAvailabilityResponse>(responseBody);
+                    return result.CanInjectOrders;
+                }
+                return false;
             }
-            return false;
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public async Task<string> SendOrderAsync(Order order, Customer customer)
@@ -83,8 +90,6 @@ namespace Acrelec.SCO.Core.Providers
             }
             else
             {
-                var errorMessage = await httpResponseMessage.Content.ReadAsStringAsync();
-                Console.WriteLine(errorMessage);
                 return null;
             }
         }

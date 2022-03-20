@@ -92,9 +92,7 @@ namespace Acrelec.SCO.Core
         private static void BuildConfig(ConfigurationBuilder builder)
         {
             builder.SetBasePath(Directory.GetCurrentDirectory())
-                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                 .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true)
-                 .AddEnvironmentVariables();
+                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
         }
 
         private static IServiceProvider ConfigureServices(ConfigurationBuilder builder)
