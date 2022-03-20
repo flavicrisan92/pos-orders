@@ -2,6 +2,12 @@
 {
     public class CheckAvailabilityResponse
     {
+
+        public CheckAvailabilityResponse(bool canInjectOrders)
+        {
+            CanInjectOrders = canInjectOrders;
+        }
+
         /// <summary>
         /// if true then Core can inject orders
         /// </summary>

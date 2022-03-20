@@ -1,5 +1,6 @@
 ﻿using Acrelec.SCO.Core.Interfaces;
 using Acrelec.SCO.DataStructures;
+using System;
 using System.Threading.Tasks;
 
 namespace Acrelec.SCO.Core.Managers
@@ -21,7 +22,15 @@ namespace Acrelec.SCO.Core.Managers
         //todo - implement interface knowing that it has to call the REST API described in readme.txt file 
         public async Task<string> InjectOrderAsync(Order orderToInject)
         {
-            return await _itemsProvider.SendOrderAsync(orderToInject, _customer);
+            try
+            {
+                return await _itemsProvider.SendOrderAsync(orderToInject, _customer);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message.ToString());
+                return null;
+            }
         }
     }
 }

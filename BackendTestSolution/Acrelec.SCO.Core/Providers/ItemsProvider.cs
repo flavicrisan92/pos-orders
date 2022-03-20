@@ -43,7 +43,12 @@ namespace Acrelec.SCO.Core.Providers
             using (StreamReader r = new("Data/ContentItems.json"))
             {
                 string json = r.ReadToEnd();
-                _posItems = JsonConvert.DeserializeObject<List<POSItem>>(json);
+
+                var items = JsonConvert.DeserializeObject<List<POSItem>>(json);
+                if (items != null)
+                {
+                    _posItems = items;
+                }
             }
         }
 

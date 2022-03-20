@@ -1,4 +1,5 @@
-﻿using Acrelec.SCO.Server.Model.RestExchangedMessages;
+﻿using Acrelec.SCO.Server.Interfaces;
+using Acrelec.SCO.Server.Model.RestExchangedMessages;
 using System;
 
 namespace Acrelec.SCO.Server.Services

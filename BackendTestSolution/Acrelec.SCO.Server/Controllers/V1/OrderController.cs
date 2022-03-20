@@ -1,4 +1,5 @@
 ﻿using Acrelec.SCO.Server.Exceptions;
+using Acrelec.SCO.Server.Interfaces;
 using Acrelec.SCO.Server.Model.RestExchangedMessages;
 using Acrelec.SCO.Server.Services;
 using Microsoft.AspNetCore.Http;
@@ -32,7 +33,7 @@ namespace Acrelec.SCO.Server.Controllers.V1
         [HttpPost]
         [ProducesResponseType(typeof(InjectOrderResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult Post(InjectOrderRequest orderRequest)
+        public IActionResult InjectOrder(InjectOrderRequest orderRequest)
         {
             try
             {
@@ -58,7 +59,8 @@ namespace Acrelec.SCO.Server.Controllers.V1
 
         private void ValidateOrder(InjectOrderRequest orderRequest)
         {
-            if(orderRequest.Order == null)
+            if (orderRequest.Order == null ||
+                (orderRequest.Order.OrderItems == null || orderRequest.Order.OrderItems.Count == 0))
             {
                 throw new ValidationException("Missing order details");
             }

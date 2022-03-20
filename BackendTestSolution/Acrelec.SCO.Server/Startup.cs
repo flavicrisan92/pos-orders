@@ -1,3 +1,4 @@
+using Acrelec.SCO.Server.Interfaces;
 using Acrelec.SCO.Server.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -51,6 +52,7 @@ namespace Acrelec.SCO.Server
                 c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
             });
             services.AddScoped<IOrdersService, OrderService>();
+            services.AddScoped<IHearthbeatService, HearthbeatService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

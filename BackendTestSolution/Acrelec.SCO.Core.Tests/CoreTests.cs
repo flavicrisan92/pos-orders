@@ -1,5 +1,6 @@
 using Acrelec.SCO.Core.Helpers;
 using Acrelec.SCO.Core.Interfaces;
+using Acrelec.SCO.Core.Managers;
 using Acrelec.SCO.Core.Model.RestExchangedMessages;
 using Acrelec.SCO.Core.Providers;
 using Acrelec.SCO.DataStructures;
@@ -8,6 +9,7 @@ using Moq;
 using Moq.Protected;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -46,7 +48,7 @@ namespace Acrelec.SCO.Core.Tests
             string[] expectedCodesOrder = new[] { "200", "100", "101", "50" };
 
             //todo - write the code to order the items ascendent by UnitPrice
-            var orderedCodes = itemsProvider.AllPOSItems.SortByPriceAscending().Select(q=>q.ItemCode).ToArray();
+            var orderedCodes = itemsProvider.AllPOSItems.SortByPriceAscending().Select(q => q.ItemCode).ToArray();
 
             //compare the ordered itemCodes to see it matches the expected order
             CollectionAssert.AreEqual(expectedCodesOrder, orderedCodes);
@@ -153,39 +155,37 @@ namespace Acrelec.SCO.Core.Tests
 
             IItemsProvider itemsProvider = new ItemsProvider(clientFactoryMock.Object);
 
-            var response = await itemsProvider.SendOrderAsync(It.IsAny<Order>(), It.IsAny<Customer>());
+            var response = await itemsProvider.SendOrderAsync(new Order() { OrderItems = new System.Collections.Generic.List<OrderedItem> { new OrderedItem() { ItemCode = "100", Qty = 1 } } }, new Customer());
             Assert.AreEqual(ordereNumber, response);
         }
 
-
         [TestMethod]
-        public async Task SendOrderAsync_WhenInvalidOrder_ShouldReturNull()
+        public async Task OrderManager()
         {
-            var clientHandlerMock = new Mock<DelegatingHandler>();
-            var respone = new HttpResponseMessage(HttpStatusCode.BadRequest)
+            var itemsProviderMock = new Mock<IItemsProvider>();
+            itemsProviderMock.Setup(q => q.SendOrderAsync(It.IsAny<Order>(), It.IsAny<Customer>())).ReturnsAsync("10");
+            
+            var customer = new Customer()
             {
-                Content = new StringContent("Missing customer details")
+                Address = "Bucharest",
+                Firstname = "Johm"
             };
 
-            clientHandlerMock.Protected()
-                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(respone)
-                .Verifiable();
-            clientHandlerMock.As<IDisposable>().Setup(s => s.Dispose());
+            IOrderManager orderManager = new OrderManager(itemsProviderMock.Object, customer);
 
-            var httpClient = new HttpClient(clientHandlerMock.Object)
+            var order = new Order()
             {
-                BaseAddress = new Uri("https://localhost:44395")
+                OrderItems = new List<OrderedItem> {
+                new OrderedItem() {
+                    ItemCode = "100",
+                    Qty =1
+                    }
+                }
+
             };
+            var result = await orderManager.InjectOrderAsync(order);
 
-            var clientFactoryMock = new Mock<IHttpClientFactory>();
-
-            clientFactoryMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(httpClient);
-
-            IItemsProvider itemsProvider = new ItemsProvider(clientFactoryMock.Object);
-
-            var response = await itemsProvider.SendOrderAsync(It.IsAny<Order>(), null);
-            Assert.IsNull(response);
+            Assert.AreEqual("10", result);
         }
     }
 }

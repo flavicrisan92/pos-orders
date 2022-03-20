@@ -1,4 +1,5 @@
-﻿using Acrelec.SCO.Server.Model.RestExchangedMessages;
+﻿using Acrelec.SCO.Server.Interfaces;
+using Acrelec.SCO.Server.Model.RestExchangedMessages;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,6 +11,12 @@ namespace Acrelec.SCO.Server.Controllers.V1
     [Route("api-sco/v{version:apiVersion}/[controller]")]
     public class AvailabilityController : ControllerBase
     {
+        private readonly IHearthbeatService _hearthBeatService;
+
+        public AvailabilityController(IHearthbeatService hearthBeatService)
+        {
+            _hearthBeatService = hearthBeatService;
+        }
         /// <summary>
         /// Check server availability
         /// </summary>
@@ -18,16 +25,8 @@ namespace Acrelec.SCO.Server.Controllers.V1
         [HttpGet]
         public IActionResult Get()
         {
-            CheckAvailabilityResponse result = CheckDependencies();
+            var result = _hearthBeatService.CheckDependencies();
             return Ok(result);
-        }
-
-        private static CheckAvailabilityResponse CheckDependencies()
-        {
-            return new CheckAvailabilityResponse
-            {
-                CanInjectOrders = false
-            };
         }
     }
 }

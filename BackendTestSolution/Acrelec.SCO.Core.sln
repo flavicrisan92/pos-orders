@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Acrelec.SCO.Core.Tests", "A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Acrelec.SCO.Server", "Acrelec.SCO.Server\Acrelec.SCO.Server.csproj", "{0A4522C8-6069-4400-9348-080DABCCBF99}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Acrelec.SCO.Server.Tests", "Acrelec.SCO.Server.Tests\Acrelec.SCO.Server.Tests.csproj", "{2FAE2930-9EB3-4941-8F6E-15EE85189DCF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{0A4522C8-6069-4400-9348-080DABCCBF99}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A4522C8-6069-4400-9348-080DABCCBF99}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0A4522C8-6069-4400-9348-080DABCCBF99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FAE2930-9EB3-4941-8F6E-15EE85189DCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FAE2930-9EB3-4941-8F6E-15EE85189DCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FAE2930-9EB3-4941-8F6E-15EE85189DCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FAE2930-9EB3-4941-8F6E-15EE85189DCF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
