@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
 
 namespace Acrelec.SCO.Server.Controllers.V1
 {
@@ -60,7 +61,8 @@ namespace Acrelec.SCO.Server.Controllers.V1
         private void ValidateOrder(InjectOrderRequest orderRequest)
         {
             if (orderRequest.Order == null ||
-                (orderRequest.Order.OrderItems == null || orderRequest.Order.OrderItems.Count == 0))
+    orderRequest.Order.OrderItems == null || orderRequest.Order.OrderItems.Count == 0 ||
+    orderRequest.Order.OrderItems.Any(q => string.IsNullOrEmpty(q.ItemCode) || q.Qty == 0))
             {
                 throw new ValidationException("Missing order details");
             }

@@ -105,6 +105,70 @@ namespace Acrelec.SCO.Server.Tests
         }
 
         [TestMethod]
+        public void OrderController_WhenInvalidOrderedItem_ReturnBadRequest()
+        {
+            var mockOrderService = new Mock<IOrdersService>();
+            mockOrderService.Setup(q => q.InjectOrder(It.IsAny<InjectOrderRequest>()))
+                .Returns("10");
+            var mockLogger = new Mock<ILogger<OrderController>>();
+            var controller = new OrderController(mockLogger.Object, mockOrderService.Object);
+
+            var order = new InjectOrderRequest()
+            {
+                Customer = new DataStructures.Customer(),
+                Order = new DataStructures.Order()
+                {
+                    OrderItems = new List<DataStructures.OrderedItem>()
+                    {
+                        new DataStructures.OrderedItem(){ItemCode = ""}
+                    }
+                }
+            };
+
+            // Act
+            var result = controller.InjectOrder(order);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+            var value = result.As<BadRequestObjectResult>().Value.As<string>();
+            Assert.AreEqual("Missing order details", value);
+        }
+
+
+        [TestMethod]
+        public void OrderController_WhenInvalidOrderedItemQty_ReturnBadRequest()
+        {
+            var mockOrderService = new Mock<IOrdersService>();
+            mockOrderService.Setup(q => q.InjectOrder(It.IsAny<InjectOrderRequest>()))
+                .Returns("10");
+            var mockLogger = new Mock<ILogger<OrderController>>();
+            var controller = new OrderController(mockLogger.Object, mockOrderService.Object);
+
+            var order = new InjectOrderRequest()
+            {
+                Customer = new DataStructures.Customer(),
+                Order = new DataStructures.Order()
+                {
+                    OrderItems = new List<DataStructures.OrderedItem>()
+                    {
+                        new DataStructures.OrderedItem()
+                        {
+                            ItemCode = "100"
+                        }
+                    }
+                }
+            };
+
+            // Act
+            var result = controller.InjectOrder(order);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+            var value = result.As<BadRequestObjectResult>().Value.As<string>();
+            Assert.AreEqual("Missing order details", value);
+        }
+
+        [TestMethod]
         public void OrderController_WhenInvalidCustomer_ReturnBadRequest()
         {
             var mockOrderService = new Mock<IOrdersService>();
