@@ -8,23 +8,21 @@ namespace Acrelec.SCO.Core.Managers
     public class OrderManager : IOrderManager
     {
         private IItemsProvider _itemsProvider { get; set; }
-        public Customer _customer { get; private set; }
 
         /// <summary>
         /// constructor
         /// </summary>
-        public OrderManager(IItemsProvider itemsProvider, Customer customer)
+        public OrderManager(IItemsProvider itemsProvider)
         {
             _itemsProvider = itemsProvider;
-            _customer = customer;
         }
 
         //todo - implement interface knowing that it has to call the REST API described in readme.txt file 
-        public async Task<string> InjectOrderAsync(Order orderToInject)
+        public async Task<string> InjectOrderAsync(Order orderToInject, Customer customer)
         {
             try
             {
-                return await _itemsProvider.SendOrderAsync(orderToInject, _customer);
+                return await _itemsProvider.SendOrderAsync(orderToInject, customer);
             }
             catch(Exception ex)
             {

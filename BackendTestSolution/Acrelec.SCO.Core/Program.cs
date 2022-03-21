@@ -26,9 +26,9 @@ namespace Acrelec.SCO.Core
             var serviceProvider = ConfigureServices(builder);
 
             //init
-            IItemsProvider itemsProvider = new ItemsProvider(serviceProvider.GetService<IHttpClientFactory>());
-            Customer customer = GetCustomer();
-            IOrderManager orderManager = new OrderManager(itemsProvider, customer);
+            IItemsProvider itemsProvider = new ItemsProvider(serviceProvider.GetService<IHttpClientFactory>(), serviceProvider.GetService<IConfiguration>());
+            
+            IOrderManager orderManager = new OrderManager(itemsProvider);
 
             //list POS items
             ListAllItems(itemsProvider);
@@ -48,7 +48,8 @@ namespace Acrelec.SCO.Core
                 //...
 
                 //inject the order to POS
-                var assignedOrderNumber = await orderManager.InjectOrderAsync(newOrder);
+                Customer customer = GetCustomer();
+                var assignedOrderNumber = await orderManager.InjectOrderAsync(newOrder, customer);
 
                 if (!string.IsNullOrEmpty(assignedOrderNumber) == true)
                     Console.WriteLine("Order injected with success");

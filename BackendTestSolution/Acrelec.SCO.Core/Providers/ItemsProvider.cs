@@ -1,6 +1,7 @@
 ﻿using Acrelec.SCO.Core.Interfaces;
 using Acrelec.SCO.Core.Model.RestExchangedMessages;
 using Acrelec.SCO.DataStructures;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,7 @@ namespace Acrelec.SCO.Core.Providers
     public class ItemsProvider : IItemsProvider
     {
         private readonly HttpClient _httpClient;
+        private readonly IConfiguration _configuration;
         private List<POSItem> _posItems;
 
         public List<POSItem> AllPOSItems => _posItems;
@@ -27,9 +29,10 @@ namespace Acrelec.SCO.Core.Providers
         /// <summary>
         /// constructor
         /// </summary>
-        public ItemsProvider(IHttpClientFactory clientFactory)
+        public ItemsProvider(IHttpClientFactory clientFactory, IConfiguration configuration)
         {
             _httpClient = clientFactory.CreateClient("ItemsProvider");
+            _configuration = configuration;
             _posItems = new List<POSItem>();
             LoadItemsFromPOS();
         }
@@ -40,7 +43,7 @@ namespace Acrelec.SCO.Core.Providers
         public void LoadItemsFromPOS()
         {
             //todo - implement the code to load items from Data\ContentItems.json file
-            using (StreamReader r = new("Data/ContentItems.json"))
+            using (StreamReader r = new(_configuration["itemsProviderDataPath"]))
             {
                 string json = r.ReadToEnd();
 

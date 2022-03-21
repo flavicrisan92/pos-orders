@@ -12,8 +12,9 @@ namespace Acrelec.SCO.Core.Interfaces
         /// <summary>
         /// inject an order into the POS system
         /// </summary>
-        /// <param name="orderToInject"></param>
+        /// <param name="orderToInject"></param
+        /// <param name="customer"></param>
         /// <returns></returns>
-        Task<string> InjectOrderAsync(Order orderToInject);
+        Task<string> InjectOrderAsync(Order orderToInject, Customer customer);
     }
 }

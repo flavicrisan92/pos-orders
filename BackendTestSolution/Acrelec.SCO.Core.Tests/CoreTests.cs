@@ -4,6 +4,7 @@ using Acrelec.SCO.Core.Managers;
 using Acrelec.SCO.Core.Model.RestExchangedMessages;
 using Acrelec.SCO.Core.Providers;
 using Acrelec.SCO.DataStructures;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Moq.Protected;
@@ -26,7 +27,10 @@ namespace Acrelec.SCO.Core.Tests
         public void ItemsProviderTest()
         {
             var clientFactoryMock = new Mock<IHttpClientFactory>();
-            IItemsProvider itemsProvider = new ItemsProvider(clientFactoryMock.Object);
+            Mock<IConfiguration> mockConfiguration = new();
+            mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "itemsProviderDataPath")]).Returns("Data/ContentItems.json");
+
+            IItemsProvider itemsProvider = new ItemsProvider(clientFactoryMock.Object, mockConfiguration.Object);
             Assert.AreEqual(4, itemsProvider.AllPOSItems.Count, "Different number of items are expected");
         }
 
@@ -34,7 +38,10 @@ namespace Acrelec.SCO.Core.Tests
         public void ItemsProviderAvailablePOSItemsTest()
         {
             var clientFactoryMock = new Mock<IHttpClientFactory>();
-            IItemsProvider itemsProvider = new ItemsProvider(clientFactoryMock.Object);
+            Mock<IConfiguration> mockConfiguration = new();
+            mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "itemsProviderDataPath")]).Returns("Data/ContentItems.json");
+
+            IItemsProvider itemsProvider = new ItemsProvider(clientFactoryMock.Object, mockConfiguration.Object);
             Assert.AreEqual(3, itemsProvider.AvailablePOSItems.Count, "Different number of available items are expected");
 
             //todo - write an assert to check only for items that are available (IsAvailable=True)
@@ -44,7 +51,10 @@ namespace Acrelec.SCO.Core.Tests
         public void OrderedItemsByCodeTest()
         {
             var clientFactoryMock = new Mock<IHttpClientFactory>();
-            IItemsProvider itemsProvider = new ItemsProvider(clientFactoryMock.Object);
+            Mock<IConfiguration> mockConfiguration = new();
+            mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "itemsProviderDataPath")]).Returns("Data/ContentItems.json");
+
+            IItemsProvider itemsProvider = new ItemsProvider(clientFactoryMock.Object, mockConfiguration.Object);
             string[] expectedCodesOrder = new[] { "200", "100", "101", "50" };
 
             //todo - write the code to order the items ascendent by UnitPrice
@@ -80,10 +90,12 @@ namespace Acrelec.SCO.Core.Tests
             };
 
             var clientFactoryMock = new Mock<IHttpClientFactory>();
+            Mock<IConfiguration> mockConfiguration = new();
+            mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "itemsProviderDataPath")]).Returns("Data/ContentItems.json");
 
             clientFactoryMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(httpClient);
 
-            IItemsProvider itemsProvider = new ItemsProvider(clientFactoryMock.Object);
+            IItemsProvider itemsProvider = new ItemsProvider(clientFactoryMock.Object, mockConfiguration.Object);
             var result = await itemsProvider.CheckServerAvailabilityAsync();
             Assert.IsTrue(result);
         }
@@ -117,8 +129,10 @@ namespace Acrelec.SCO.Core.Tests
             var clientFactoryMock = new Mock<IHttpClientFactory>();
 
             clientFactoryMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(httpClient);
+            Mock<IConfiguration> mockConfiguration = new();
+            mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "itemsProviderDataPath")]).Returns("Data/ContentItems.json");
 
-            IItemsProvider itemsProvider = new ItemsProvider(clientFactoryMock.Object);
+            IItemsProvider itemsProvider = new ItemsProvider(clientFactoryMock.Object, mockConfiguration.Object);
             var result = await itemsProvider.CheckServerAvailabilityAsync();
             Assert.IsFalse(result);
         }
@@ -152,8 +166,10 @@ namespace Acrelec.SCO.Core.Tests
             var clientFactoryMock = new Mock<IHttpClientFactory>();
 
             clientFactoryMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(httpClient);
+            Mock<IConfiguration> mockConfiguration = new();
+            mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "itemsProviderDataPath")]).Returns("Data/ContentItems.json");
 
-            IItemsProvider itemsProvider = new ItemsProvider(clientFactoryMock.Object);
+            IItemsProvider itemsProvider = new ItemsProvider(clientFactoryMock.Object, mockConfiguration.Object);
 
             var response = await itemsProvider.SendOrderAsync(new Order() { OrderItems = new System.Collections.Generic.List<OrderedItem> { new OrderedItem() { ItemCode = "100", Qty = 1 } } }, new Customer());
             Assert.AreEqual(ordereNumber, response);
@@ -164,14 +180,8 @@ namespace Acrelec.SCO.Core.Tests
         {
             var itemsProviderMock = new Mock<IItemsProvider>();
             itemsProviderMock.Setup(q => q.SendOrderAsync(It.IsAny<Order>(), It.IsAny<Customer>())).ReturnsAsync("10");
-            
-            var customer = new Customer()
-            {
-                Address = "Bucharest",
-                Firstname = "Johm"
-            };
 
-            IOrderManager orderManager = new OrderManager(itemsProviderMock.Object, customer);
+            IOrderManager orderManager = new OrderManager(itemsProviderMock.Object);
 
             var order = new Order()
             {
@@ -183,7 +193,15 @@ namespace Acrelec.SCO.Core.Tests
                 }
 
             };
-            var result = await orderManager.InjectOrderAsync(order);
+
+            var customer = new Customer()
+            {
+                Address = "Bucharest",
+                Firstname = "Johm"
+            };
+
+
+            var result = await orderManager.InjectOrderAsync(order, customer);
 
             Assert.AreEqual("10", result);
         }
